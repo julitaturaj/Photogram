@@ -20,8 +20,8 @@ export class AuthController {
     status: 201,
     description: 'The user has successfully sign up.',
   })
-  postSignup(@Body(ValidationPipe) signUpDto: SignUpDto): void {
-    return this.authService.postSignup(signUpDto);
+  async postSignup(@Body(ValidationPipe) signUpDto: SignUpDto): Promise<void> {
+    await this.authService.postSignup(signUpDto);
   }
 
   @Post('login')

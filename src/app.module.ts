@@ -13,7 +13,7 @@ import { AuthModule } from './auth/auth.module';
       username: 'postgres',
       password: 'root',
       database: 'photogram',
-      entities: [],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     AuthModule,
