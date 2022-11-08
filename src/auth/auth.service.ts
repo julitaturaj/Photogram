@@ -5,6 +5,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { UserEmailExistsError } from 'src/errors/UserEmailAlreadyExists.error';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,17 @@ export class AuthService {
       verificationToken,
     });
 
-    await user.save();
+    try {
+      await user.save();
+    } catch (err) {
+      if (err.code === '23505') {
+        throw new UserEmailExistsError();
+      } else {
+        throw err;
+      }
+    }
+
+    // this.sendVerificationEmail();
   }
 
   postLogin(): void {
