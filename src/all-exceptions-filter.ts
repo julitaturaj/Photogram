@@ -6,7 +6,8 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const status = exception.status;
+    console.log(exception);
+    const status = exception.status || 500;
     const message = exception.message;
 
     response.status(status).json({
