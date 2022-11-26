@@ -12,8 +12,11 @@ const database: TypeOrmModuleOptions = {
   synchronize: true,
 };
 
+const sendGridApiKey = process.env.SENDGRID_API_KEY;
+
 export default () => ({
   database,
+  sendGridApiKey,
   jwt: {
     secret: process.env.JWT_SECRET,
     signOptions: {

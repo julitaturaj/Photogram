@@ -13,6 +13,9 @@ import { InactiveAccountError } from 'src/errors/InactiveAccount.error';
 import { IncorrectPasswordError } from 'src/errors/IncorrectPassword.error';
 import { JwtPayload } from './jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from '../common/services/mail.service';
+import { getSignUpMailContent } from './email-templates/signUpEmail';
+import { SignUpDto } from './dto/sign-up.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,10 +23,24 @@ export class AuthService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
-  async postSignup(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    const { password, email } = authCredentialsDto;
+  async sendVerificationEmail(user: User, callbackUrl: string) {
+    const msg = {
+      to: user.email,
+      from: 'julisqqa@o2.pl',
+      subject: 'Photogram - confirm your account',
+      html: getSignUpMailContent({
+        confirmationLink:
+          callbackUrl + '?verificationToken=' + user.verificationToken,
+      }),
+    };
+    await this.mailService.sendMail(msg);
+  }
+
+  async signUp(signUpDto: SignUpDto): Promise<void> {
+    const { password, email, callbackUrl } = signUpDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(128).toString('hex');
 
@@ -43,7 +60,7 @@ export class AuthService {
       }
     }
 
-    // this.sendVerificationEmail();
+    this.sendVerificationEmail(user, callbackUrl);
   }
 
   async verifyUser(

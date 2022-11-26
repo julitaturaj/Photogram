@@ -8,7 +8,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     const response = ctx.getResponse();
     console.log(exception);
     const status = exception.status || 500;
-    const message = exception.message;
+    const message = exception.response?.message || exception.message;
 
     response.status(status).json({
       status: status,

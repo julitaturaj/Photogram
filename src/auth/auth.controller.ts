@@ -13,6 +13,7 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthorizedUser } from 'src/common/decorators/authorized-user.decorator';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 import { VerificationAccountTokenDto } from './dto/verification-account-token.dto';
 import { User } from './entities/user.entity';
 
@@ -31,10 +32,8 @@ export class AuthController {
     status: 409,
     description: 'User with this email already exists.',
   })
-  async postSignup(
-    @Body(ValidationPipe) signUpDto: AuthCredentialsDto,
-  ): Promise<void> {
-    await this.authService.postSignup(signUpDto);
+  async postSignup(@Body(ValidationPipe) signUpDto: SignUpDto): Promise<void> {
+    await this.authService.signUp(signUpDto);
   }
 
   @Post('signin')
