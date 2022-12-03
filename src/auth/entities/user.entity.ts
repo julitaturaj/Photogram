@@ -1,9 +1,11 @@
+import { PhotoPost } from 'src/photoPost/entities/photo-post.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   Unique,
   BaseEntity,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -23,4 +25,7 @@ export class User extends BaseEntity {
 
   @Column()
   verificationToken: string;
+
+  @OneToMany(() => PhotoPost, (photoPost) => photoPost.user)
+  photoPosts: PhotoPost[];
 }

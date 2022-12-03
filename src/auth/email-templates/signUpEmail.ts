@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { compile } from 'handlebars';
 import mjml2html from 'mjml';
-console.log(mjml2html);
 
 const signUpContent = fs.readFileSync(
   path.join(process.cwd(), 'src/auth/email-templates/sign-up-email.mjml'),

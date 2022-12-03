@@ -8,6 +8,7 @@ const { combine, timestamp, json } = winston.format;
 
 import { AuthModule } from './auth/auth.module';
 import config from './config/config';
+import { PhotoPostModule } from './photoPost/photoPost.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import config from './config/config';
       inject: [ConfigService],
     }),
     AuthModule,
+    PhotoPostModule,
   ],
 })
 export class AppModule {}
