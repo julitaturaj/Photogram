@@ -6,6 +6,7 @@ import {
   Unique,
   BaseEntity,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()

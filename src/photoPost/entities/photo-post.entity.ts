@@ -1,14 +1,14 @@
-import { userInfo } from 'os';
 import { User } from 'src/auth/entities/user.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   BaseEntity,
-  OneToOne,
-  JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
+import { Comment } from './comment.entity';
+import { Like } from './like.entity';
 
 @Entity()
 export class PhotoPost extends BaseEntity {
@@ -26,4 +26,10 @@ export class PhotoPost extends BaseEntity {
 
   @Column()
   userId: number;
+
+  @OneToMany(() => Comment, (comment) => comment.photoPost)
+  comments: Comment[];
+
+  @OneToMany(() => Like, (like) => like.photoPost)
+  likes: Like[];
 }
