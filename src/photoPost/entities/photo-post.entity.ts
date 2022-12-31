@@ -21,6 +21,9 @@ export class PhotoPost extends BaseEntity {
   @Column()
   content: string;
 
+  @Column()
+  photoPath: string;
+
   @ManyToOne(() => User, (user) => user.photoPosts)
   user: User;
 

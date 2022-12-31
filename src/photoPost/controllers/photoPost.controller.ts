@@ -3,10 +3,14 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Post,
   Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -21,6 +25,8 @@ import { Comment } from '../entities/comment.entity';
 import { Like } from '../entities/like.entity';
 import { PhotoPost } from '../entities/photo-post.entity';
 import { PhotoPostService } from '../services/photoPost.service';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { diskStorage } from 'multer';
 
 @Controller('photoposts')
 @ApiTags('photoposts')
@@ -30,6 +36,16 @@ export class PhotoPostController {
   @Post()
   @UseGuards(AuthGuard())
   @HttpCode(200)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './files',
+        filename: (_, file, cb) => {
+          cb(null, `${Date.now()}-${file.originalname}`);
+        },
+      }),
+    }),
+  )
   @ApiBearerAuth()
   @ApiResponse({
     status: 201,
@@ -39,11 +55,21 @@ export class PhotoPostController {
     status: 401,
     description: 'Unauthorized.',
   })
-  async createPost(
+  createPost(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'jpeg',
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    photo: any,
     @Body(ValidationPipe) photoPostDto: CreatePhotoPostDto,
     @AuthorizedUser() user: JwtPayload,
   ): Promise<PhotoPost> {
-    return await this.photoPostService.createPhotoPost(photoPostDto, user.id);
+    return this.photoPostService.createPhotoPost(photoPostDto, photo, user.id);
   }
 
   @Get()

@@ -15,6 +15,10 @@ const database: TypeOrmModuleOptions = {
 const sendGridApiKey = process.env.SENDGRID_API_KEY;
 
 export default () => ({
+  app: {
+    host: process.env.APP_HOST || 'localhost',
+    port: process.env.APP_PORT || 3000,
+  },
   database,
   sendGridApiKey,
   jwt: {

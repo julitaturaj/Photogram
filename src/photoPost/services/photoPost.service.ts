@@ -7,6 +7,7 @@ import { PhotoPost } from '../entities/photo-post.entity';
 import { Comment } from '../entities/comment.entity';
 import { Like } from '../entities/like.entity';
 import { PostNotFoundError } from '../errors/PostNotFound.error';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PhotoPostService {
@@ -17,17 +18,24 @@ export class PhotoPostService {
     private commentRepository: Repository<Comment>,
     @InjectRepository(Like)
     private likeRepository: Repository<Like>,
+    private configService: ConfigService,
   ) {}
 
   createPhotoPost(
     createPhotoPostDto: CreatePhotoPostDto,
+    photo: Express.Multer.File,
     userId: number,
   ): Promise<PhotoPost> {
+    const appConfig = this.configService.get('app');
+    const photoPath = `${appConfig.host}:${appConfig.port}/files/${photo.filename}`;
+
     const { title, content } = createPhotoPostDto;
+
     return this.photoPostRepository
       .create({
         title,
         content,
+        photoPath,
         userId,
       })
       .save();
@@ -54,7 +62,6 @@ export class PhotoPostService {
     });
 
     if (!foundPhotoPost) {
-      // todo: blad domenowy
       throw new NotFoundException(
         `PhotoPost with ID "${photoPostId}" not found`,
       );
