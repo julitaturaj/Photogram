@@ -12,15 +12,15 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { JwtPayload } from 'src/auth/jwt-payload.interface';
+import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import { AuthorizedUser } from 'src/common/decorators/authorized-user.decorator';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { CreatePhotoPostDto } from './dto/create-photo-post.dto';
-import { PhotoPostDto } from './dto/photo-post.dto';
-import { Comment } from './entities/comment.entity';
-import { Like } from './entities/like.entity';
-import { PhotoPost } from './entities/photo-post.entity';
-import { PhotoPostService } from './photoPost.service';
+import { CreateCommentDto } from '../dto/create-comment.dto';
+import { CreatePhotoPostDto } from '../dto/create-photo-post.dto';
+import { PhotoPostDto } from '../dto/photo-post.dto';
+import { Comment } from '../entities/comment.entity';
+import { Like } from '../entities/like.entity';
+import { PhotoPost } from '../entities/photo-post.entity';
+import { PhotoPostService } from '../services/photoPost.service';
 
 @Controller('photoposts')
 @ApiTags('photoposts')

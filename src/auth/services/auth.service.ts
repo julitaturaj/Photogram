@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AuthCredentialsDto } from './dto/auth-credentials.dto';
-import { User } from './entities/user.entity';
+import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
+import { User } from '../entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { UserEmailExistsError } from 'src/errors/UserEmailAlreadyExists.error';
-import { InvalidVerificationAccountTokenError } from 'src/errors/InvalidVerificationAccountToken.error';
-import { VerificationAccountTokenDto } from './dto/verification-account-token.dto';
-import { UserNotExistsError } from 'src/errors/UserNotExists.error';
-import { InactiveAccountError } from 'src/errors/InactiveAccount.error';
-import { IncorrectPasswordError } from 'src/errors/IncorrectPassword.error';
-import { JwtPayload } from './jwt-payload.interface';
+import { UserEmailExistsError } from '../errors/UserEmailAlreadyExists.error';
+import { InvalidVerificationAccountTokenError } from '../errors/InvalidVerificationAccountToken.error';
+import { VerificationAccountTokenDto } from '../dto/verification-account-token.dto';
+import { UserNotExistsError } from '../errors/UserNotExists.error';
+import { InactiveAccountError } from 'src/auth/errors/InactiveAccount.error';
+import { IncorrectPasswordError } from '../errors/IncorrectPassword.error';
+import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
-import { MailService } from '../common/services/mail.service';
-import { getSignUpMailContent } from './email-templates/signUpEmail';
-import { SignUpDto } from './dto/sign-up.dto';
+import { MailService } from '../../common/services/mail.service';
+import { getSignUpMailContent } from '../email-templates/signUpEmail';
+import { SignUpDto } from '../dto/sign-up.dto';
 
 @Injectable()
 export class AuthService {

@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { CreatePhotoPostDto } from './dto/create-photo-post.dto';
-import { PhotoPost } from './entities/photo-post.entity';
-import { Comment } from './entities/comment.entity';
-import { Like } from './entities/like.entity';
+import { CreateCommentDto } from '../dto/create-comment.dto';
+import { CreatePhotoPostDto } from '../dto/create-photo-post.dto';
+import { PhotoPost } from '../entities/photo-post.entity';
+import { Comment } from '../entities/comment.entity';
+import { Like } from '../entities/like.entity';
+import { PostNotFoundError } from '../errors/PostNotFound.error';
 
 @Injectable()
 export class PhotoPostService {
@@ -18,23 +19,22 @@ export class PhotoPostService {
     private likeRepository: Repository<Like>,
   ) {}
 
-  async createPhotoPost(
+  createPhotoPost(
     createPhotoPostDto: CreatePhotoPostDto,
     userId: number,
   ): Promise<PhotoPost> {
     const { title, content } = createPhotoPostDto;
-    const photoPost = this.photoPostRepository.create({
-      title,
-      content,
-      userId,
-    });
-
-    await photoPost.save();
-    return photoPost;
+    return this.photoPostRepository
+      .create({
+        title,
+        content,
+        userId,
+      })
+      .save();
   }
 
-  async findAllPhotoPosts(): Promise<PhotoPost[]> {
-    return await this.photoPostRepository.find({
+  findAllPhotoPosts(): Promise<PhotoPost[]> {
+    return this.photoPostRepository.find({
       relations: {
         likes: true,
       },
@@ -54,6 +54,7 @@ export class PhotoPostService {
     });
 
     if (!foundPhotoPost) {
+      // todo: blad domenowy
       throw new NotFoundException(
         `PhotoPost with ID "${photoPostId}" not found`,
       );
@@ -62,31 +63,33 @@ export class PhotoPostService {
     return foundPhotoPost;
   }
 
-  async createComment(
+  createComment(
     createCommentDto: CreateCommentDto,
     photoPostId: number,
     userId: number,
   ): Promise<Comment> {
     const { content } = createCommentDto;
-    const comment = this.commentRepository.create({
-      content,
-      photoPostId: photoPostId,
-      userId: userId,
-    });
-
-    await comment.save();
-    return comment;
+    return this.commentRepository
+      .create({
+        content,
+        photoPostId: photoPostId,
+        userId: userId,
+      })
+      .save();
   }
 
   async findAllComments(photoPostId: number): Promise<Comment[]> {
-    await this.findOnePhotoPost(photoPostId);
-    return this.commentRepository.find({
-      where: { photoPostId: photoPostId },
+    const post = await this.photoPostRepository.findOne({
+      where: { id: photoPostId },
+      relations: { comments: true },
     });
+    if (!post) {
+      throw new PostNotFoundError();
+    }
+    return post.comments;
   }
 
   async likePost(photoPostId: number, userId: number): Promise<Like | void> {
-    this.findOnePhotoPost(photoPostId);
     const foundLike = await this.likeRepository.findOne({
       where: {
         photoPostId: photoPostId,
@@ -109,9 +112,13 @@ export class PhotoPostService {
   }
 
   async findAllLikes(photoPostId: number): Promise<Like[]> {
-    await this.findOnePhotoPost(photoPostId);
-    return this.likeRepository.find({
-      where: { photoPostId: photoPostId },
+    const post = await this.photoPostRepository.findOne({
+      where: { id: photoPostId },
+      relations: { likes: true },
     });
+    if (!post) {
+      throw new PostNotFoundError();
+    }
+    return post.likes;
   }
 }

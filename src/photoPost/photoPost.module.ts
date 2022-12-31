@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PhotoPost } from './entities/photo-post.entity';
-import { PhotoPostController } from './photoPost.controller';
-import { PhotoPostService } from './photoPost.service';
+import { PhotoPostController } from './controllers/photoPost.controller';
+import { PhotoPostService } from './services/photoPost.service';
 import { AuthModule } from '../auth/auth.module';
 import { Comment } from './entities/comment.entity';
 import { Like } from './entities/like.entity';
