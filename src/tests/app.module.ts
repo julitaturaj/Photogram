@@ -6,9 +6,9 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { WinstonModule } from 'nest-winston';
 const { combine, timestamp, json } = winston.format;
 
-import { AuthModule } from './auth/auth.module';
-import config from './config/config';
-import { PhotoPostModule } from './photoPost/photoPost.module';
+import { AuthModule } from '../auth/auth.module';
+import config from '../config/config';
+import { PhotoPostModule } from '../photoPost/photoPost.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
