@@ -26,19 +26,17 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       isGlobal: true,
       load: [config],
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [
-        ConfigModule,
-        WinstonModule.forRoot({
-          level: 'info',
-          format: combine(timestamp(), json()),
-          transports: [
-            new winston.transports.File({
-              filename: 'combined.log',
-            }),
-          ],
+    WinstonModule.forRoot({
+      level: 'info',
+      format: combine(timestamp(), json()),
+      transports: [
+        new winston.transports.File({
+          filename: 'combined.log',
         }),
       ],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: async (configService: ConfigService) =>
         configService.get('database') as TypeOrmModuleOptions,
       inject: [ConfigService],

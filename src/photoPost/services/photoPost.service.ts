@@ -8,12 +8,13 @@ import { Comment } from '../entities/comment.entity';
 import { Like } from '../entities/like.entity';
 import { PostNotFoundError } from '../errors/PostNotFound.error';
 import { ConfigService } from '@nestjs/config';
+import { PhotoPostRepository } from '../repositories/photoPost.repository';
 
 @Injectable()
 export class PhotoPostService {
   constructor(
-    @InjectRepository(PhotoPost)
-    private photoPostRepository: Repository<PhotoPost>,
+    @InjectRepository(PhotoPostRepository)
+    private photoPostRepository: PhotoPostRepository,
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
     @InjectRepository(Like)

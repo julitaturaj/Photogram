@@ -1,4 +1,4 @@
-import { PhotoPost } from 'src/photoPost/entities/photo-post.entity';
+import { PhotoPost } from '../../photoPost/entities/photo-post.entity';
 import {
   Entity,
   Column,
@@ -6,7 +6,6 @@ import {
   Unique,
   BaseEntity,
   OneToMany,
-  ManyToOne,
 } from 'typeorm';
 
 @Entity()

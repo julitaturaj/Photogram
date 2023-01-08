@@ -9,19 +9,20 @@ import { UserEmailExistsError } from '../errors/UserEmailAlreadyExists.error';
 import { InvalidVerificationAccountTokenError } from '../errors/InvalidVerificationAccountToken.error';
 import { VerificationAccountTokenDto } from '../dto/verification-account-token.dto';
 import { UserNotExistsError } from '../errors/UserNotExists.error';
-import { InactiveAccountError } from 'src/auth/errors/InactiveAccount.error';
+import { InactiveAccountError } from '../../auth/errors/InactiveAccount.error';
 import { IncorrectPasswordError } from '../errors/IncorrectPassword.error';
 import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from '../../common/services/mail.service';
 import { getSignUpMailContent } from '../email-templates/signUpEmail';
 import { SignUpDto } from '../dto/sign-up.dto';
+import { UserRepository } from '../repositories/user.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    @InjectRepository(UserRepository)
+    private userRepository: UserRepository,
     private jwtService: JwtService,
     private mailService: MailService,
   ) {}
@@ -44,7 +45,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(128).toString('hex');
 
-    const user = this.usersRepository.create({
+    const user = this.userRepository.create({
       email,
       password: hashedPassword,
       verificationToken,
@@ -67,7 +68,7 @@ export class AuthService {
     VerificationAccountTokenDto: VerificationAccountTokenDto,
   ): Promise<void> {
     const { verificationToken } = VerificationAccountTokenDto;
-    const user = await this.usersRepository.findOneBy({
+    const user = await this.userRepository.findOneBy({
       verificationToken: verificationToken,
     });
     if (!user) {
@@ -81,7 +82,7 @@ export class AuthService {
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<{ accessToken: string }> {
     const { email, password } = authCredentialsDto;
-    const user = await this.usersRepository.findOneBy({ email: email });
+    const user = await this.userRepository.findOneBy({ email: email });
 
     if (!user) {
       throw new UserNotExistsError();

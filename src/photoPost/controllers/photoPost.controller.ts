@@ -17,7 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
-import { AuthorizedUser } from 'src/common/decorators/authorized-user.decorator';
+import { AuthorizedUser } from '../../common/decorators/authorized-user.decorator';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { CreatePhotoPostDto } from '../dto/create-photo-post.dto';
 import { PhotoPostDto } from '../dto/photo-post.dto';
