@@ -116,7 +116,7 @@ export class PhotoPostController {
 
   @Post(':id/comments')
   @UseGuards(AuthGuard())
-  @HttpCode(200)
+  @HttpCode(201)
   @ApiBearerAuth()
   @ApiResponse({
     status: 201,
@@ -133,7 +133,7 @@ export class PhotoPostController {
   ): Promise<Comment> {
     return this.photoPostService.createComment(
       createCommentDto,
-      photoPostId,
+      +photoPostId,
       user.id,
     );
   }
@@ -158,7 +158,7 @@ export class PhotoPostController {
     @Param('id') photoPostId: number,
     @Res() response: Response,
   ): Promise<Response> {
-    const result = await this.photoPostService.likePost(photoPostId, user.id);
+    const result = await this.photoPostService.likePost(+photoPostId, user.id);
     if (result) {
       return response.status(201).send(result);
     } else {

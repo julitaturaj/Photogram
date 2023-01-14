@@ -7,14 +7,23 @@ import { AuthService } from '../auth/services/auth.service';
 import request from 'supertest';
 import { PhotoPost } from './entities/photo-post.entity';
 import path from 'path';
+import { Comment } from './entities/comment.entity';
+import { User } from 'src/auth/entities/user.entity';
+import { Like } from './entities/like.entity';
 describe('PhotoPost module', () => {
   let app: INestApplication;
   let accessToken: string;
   let photoPostId: Number;
+  let user: User;
+  let commentId: Number;
+  let likeId: Number;
   const photoPostInput = {
     title: 'Title of a photopost',
     content: 'Content of a photopost',
     filePath: path.join(__dirname, '../tests/dummy-data/photo-jpg.jpg'),
+  };
+  const commentInput = {
+    content: 'This is a comment for photopost :)',
   };
   beforeAll(async () => {
     const credentials = {
@@ -28,7 +37,7 @@ describe('PhotoPost module', () => {
     const hashedPassword = await bcrypt.hash(credentials.password, 10);
     const verificationToken = crypto.randomBytes(128).toString('hex');
 
-    await userRepository
+    user = await userRepository
       .create({
         email: credentials.email,
         password: hashedPassword,
@@ -88,13 +97,66 @@ describe('PhotoPost module', () => {
       });
   });
 
-  it('POST /photoposts/:id/comments', () => {});
+  it('POST /photoposts/:id/comments', async () => {
+    await request(app.getHttpServer())
+      .post(`/photoposts/${photoPostId}/comments`)
+      .set('Authorization', 'Bearer ' + accessToken)
+      .send(commentInput)
+      .expect(201)
+      .expect(({ body }) => {
+        expect(body).toMatchObject(new Comment());
+        expect(body.id).toBeDefined();
+        commentId = body.id;
+        expect(body.photoPostId).toEqual(photoPostId);
+        expect(body.userId).toEqual(user.id);
+        expect(body.content).toEqual(commentInput.content);
+      });
+  });
 
-  it('GET /photoposts/:id/comments', () => {});
+  it('GET /photoposts/:id/comments', async () => {
+    await request(app.getHttpServer())
+      .get(`/photoposts/${photoPostId}/comments`)
+      .set('Authorization', 'Bearer ' + accessToken)
+      .expect(200)
+      .expect(({ body }) => {
+        body.forEach((el: any) => {
+          expect(el).toMatchObject(new Comment());
+        });
+        expect(
+          body.some(
+            (el: Comment) =>
+              el.id === commentId && el.content === commentInput.content,
+          ),
+        );
+      });
+  });
 
-  it('POST /photoposts/:id/likes', () => {});
+  it('POST /photoposts/:id/likes', async () => {
+    await request(app.getHttpServer())
+      .post(`/photoposts/${photoPostId}/likes`)
+      .set('Authorization', 'Bearer ' + accessToken)
+      .expect(201)
+      .expect(({ body }) => {
+        expect(body).toMatchObject(new Like());
+        expect(body.id).toBeDefined();
+        likeId = body.id;
+        expect(body.photoPostId).toEqual(photoPostId);
+        expect(body.userId).toEqual(user.id);
+      });
+  });
 
-  it('GET /photoposts/:id/likes', () => {});
+  it('GET /photoposts/:id/likes', async () => {
+    await request(app.getHttpServer())
+      .get(`/photoposts/${photoPostId}/likes`)
+      .set('Authorization', 'Bearer ' + accessToken)
+      .expect(200)
+      .expect(({ body }) => {
+        body.forEach((el: any) => {
+          expect(el).toMatchObject(new Like());
+        });
+        expect(body.some((el: Like) => el.id === likeId));
+      });
+  });
 
   afterAll(async () => {
     await app.close();
