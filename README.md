@@ -1,6 +1,6 @@
 ## Description
 
-The API I developed using Nest.js is designed to provide users with the ability to create, update, and delete photoposts. N
+The API I developed using Nest.js is designed to provide users with the ability to create, update, and delete photoposts.
 
 The API is structured around a set of RESTful endpoints that correspond to different operations on photoposts. These endpoints are implemented using HTTP methods such as GET, POST, PUT, and DELETE, and they conform to standard RESTful conventions.
 
